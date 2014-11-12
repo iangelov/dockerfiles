@@ -1,0 +1,17 @@
+FROM ubuntu:14.04
+
+ENV MARATHON_VER 0.7.3
+
+## DEPENDENCIES ##
+RUN echo 'deb http://repos.mesosphere.io/ubuntu/ trusty main' > /etc/apt/sources.list.d/mesosphere.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E56151BF && apt-get update
+RUN apt-get install -y python-software-properties curl openjdk-7-jre-headless mesos && apt-get clean
+
+## MARATHON ##
+ADD http://downloads.mesosphere.io/marathon/v${MARATHON_VER}/marathon-${MARATHON_VER}.tgz /tmp/marathon.tgz
+RUN mkdir -p /opt/marathon && tar xzf /tmp/marathon.tgz -C /opt/marathon --strip=1 && rm -f /tmp/marathon.tgz
+
+EXPOSE 8080
+WORKDIR /opt/marathon
+CMD ["--help"]
+ENTRYPOINT ["/opt/marathon/bin/start"]
